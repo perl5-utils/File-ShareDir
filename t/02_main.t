@@ -15,7 +15,7 @@ BEGIN {
 	}
 }
 
-use Test::More tests => 15;
+use Test::More tests => 14;
 use File::ShareDir;
 
 # Existance
@@ -38,21 +38,29 @@ ok( defined &module_file, 'module_file imported' );
 
 is( File::ShareDir::_MODULE('File::ShareDir'), 'File::ShareDir',
 	'_MODULE returns correct for known loaded module' );
+is( File::ShareDir::_DIST('File-ShareDir'), 'File-ShareDir',
+	'_DIST returns correct for known good dist' );
 
 
 
 
 
 #####################################################################
-# Functionality Tests
+# Module Tests
 
 my $module_dir = module_dir('File::ShareDir');
 ok( $module_dir, 'Can find our own module dir' );
 ok( -d $module_dir, '... and is a dir' );
 ok( -r $module_dir, '... and have read permissions' );
 
-my $dist_dir = dist_dir('File-ShareDir');
-ok( $dist_dir, 'Can find our own module dir' );
-ok( -d $dist_dir, '... and is a dir' );
-ok( -r $dist_dir, '... and have read permissions' );
 
+
+
+
+#####################################################################
+# Distribution Tets
+
+#my $dist_dir = dist_dir('File-ShareDir');
+#ok( $dist_dir, 'Can find our own module dir' );
+#ok( -d $dist_dir, '... and is a dir' );
+#ok( -r $dist_dir, '... and have read permissions' );

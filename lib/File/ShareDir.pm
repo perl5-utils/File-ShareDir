@@ -140,6 +140,8 @@ data directory created at install time for it.
 Returns the directory path as a string, or dies if it cannot be
 located or is not readable.
 
+CURRENTLY INCOMPLETE
+
 =cut
 
 sub dist_dir {
@@ -200,6 +202,8 @@ C<catfile> method.
 
 Returns the file path as a string, or dies if the file or the dist's
 directory cannot be located, or the file is not readable.
+
+CURRENTLY INCOMPLETE
 
 =cut
 
@@ -264,7 +268,7 @@ sub module_file {
 # Matches a valid distribution name
 ### This is a total guess at this point
 sub _DIST {
-	if ( defined $_[0] and ! ref $_[0] and $_[0] =~ /^[a-z0-9+_-]$/ ) {
+	if ( defined $_[0] and ! ref $_[0] and $_[0] =~ /^[a-z0-9+_-]+$/is ) {
 		return shift;
 	}
 	croak("Not a valid distribution name");
