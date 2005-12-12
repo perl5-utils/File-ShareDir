@@ -1,4 +1,7 @@
 Revision history for Perl extension File::ShareDir
 
+0.02 Mon Dec 11 2005
+	- Made dist_file work properly with Module::Install::Share
+
 0.01 Sun Dec 10 2005
 	- First implementation

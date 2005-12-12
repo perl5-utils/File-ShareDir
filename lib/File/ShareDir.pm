@@ -102,6 +102,7 @@ exception.
 
 =cut
 
+use 5.005;
 use strict;
 use base 'Exporter';
 use Carp             'croak';
@@ -111,7 +112,7 @@ use Class::Inspector ();
 
 use vars qw{$VERSION $IS_MACOS @EXPORT_OK %EXPORT_TAGS};
 BEGIN {
-	$VERSION     = '0.01';
+	$VERSION     = '0.02';
 	$IS_MACOS    = $^O eq 'MacOS';
 	@EXPORT_OK   = qw{dist_dir dist_file module_dir module_file};
 	%EXPORT_TAGS = (
@@ -140,13 +141,29 @@ data directory created at install time for it.
 Returns the directory path as a string, or dies if it cannot be
 located or is not readable.
 
-CURRENTLY INCOMPLETE
-
 =cut
 
 sub dist_dir {
 	my $dist = _DIST(shift);
-	die "CODE INCOMPLETE";
+
+	# Create the subpath
+	my $path = File::Spec->catdir(
+		'auto', split( /-/, $dist ),
+		);
+
+	# Find the full dir withing @INC
+	foreach my $inc ( @INC ) {
+		next unless defined $inc and ! ref $inc;
+		my $dir = File::Spec->catdir( $inc, $path );
+		next unless -d $dir;
+		unless ( -r $dir ) {
+			croak("Directory '$dir', no read permissions");
+		}
+		return $dir;
+	}
+
+	# Couldn't find it
+	croak("Failed to find share dir for dist '$dist'");
 }
 
 =pod
@@ -177,10 +194,10 @@ sub module_dir {
 	$long  =~ m{^(.*)$short\.pm\z}s or die("Failed to find base dir");
 	my $dir = File::Spec->catdir( "$1", 'auto', $short );
 	unless ( -d $dir ) {
-		croak("Directory $dir, does not exist");
+		croak("Directory '$dir', does not exist");
 	}
 	unless ( -r $dir ) {
-		croak("Directory $dir, no read permissions");
+		croak("Directory '$dir', no read permissions");
 	}
 	return $dir;		
 }
@@ -203,22 +220,30 @@ C<catfile> method.
 Returns the file path as a string, or dies if the file or the dist's
 directory cannot be located, or the file is not readable.
 
-CURRENTLY INCOMPLETE
-
 =cut
 
 sub dist_file {
 	my $dist = _DIST(shift);
 	my $file = _FILE(shift);
-	my $dir  = dist_dir($dist);
-	my $path = File::Spec->catfile($dir, $file);
-	unless ( -e $path and -f _ ) {
-		croak("File '$file' does not exist in dist dir");
+
+	# Create the subpath
+	my $path = File::Spec->catdir(
+		'auto', split( /-/, $dist ), $file,
+		);
+
+	# Find the full dir withing @INC
+	foreach my $inc ( @INC ) {
+		next unless defined $inc and ! ref $inc;
+		my $full = File::Spec->catdir( $inc, $path );
+		next unless -f $full;
+		unless ( -r $full ) {
+			croak("Directory '$full', no read permissions");
+		}
+		return $full;
 	}
-	unless ( -r $path ) {
-		croak("File '$file' cannot be read, no read permissions");
-	}
-	$path;
+
+	# Couldn't find it
+	croak("Failed to find shared file '$file' for dist '$dist'");
 }
 
 =pod
@@ -311,6 +336,10 @@ For other issues, contact the maintainer
 
 Adam Kennedy E<lt>cpan@ali.asE<gt>, L<http://ali.as/>
 
+=head1 SEE ALSO
+
+L<Class::Inspector>, L<File::HomeDir>, L<Module::Install>, L<Module::Install::Share>
+
 =head1 COPYRIGHT
 
 Copyright (c) 2005 Adam Kennedy. All rights reserved.
@@ -319,9 +348,5 @@ it and/or modify it under the same terms as Perl itself.
 
 The full text of the license can be found in the
 LICENSE file included with this module.
-
-=head1 SEE ALSO
-
-L<Class::Inspector>, L<File::HomeDir>, L<File::ShareDir>
 
 =cut
