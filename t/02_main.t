@@ -19,7 +19,7 @@ BEGIN {
 	}
 }
 
-use Test::More tests => 24;
+use Test::More tests => 25;
 use File::ShareDir;
 
 sub dies {
@@ -105,3 +105,8 @@ my $dist_file = dist_file('File-ShareDir', 'sample.txt');
 ok( $dist_file, 'Can find our sample module file' );
 ok( -f $dist_file, '... and is a file' );
 ok( -r $dist_file, '... and have read permissions' );
+
+# Make sure the directory in dist_dir, matches the one from dist_file
+# Bug found in Module::Install 0.54, fixed in 0.55
+is( catfile($dist_dir, 'sample.txt'), $dist_file,
+	'dist_dir and dist_file find the same directory' );

@@ -112,7 +112,7 @@ use Class::Inspector ();
 
 use vars qw{$VERSION $IS_MACOS @EXPORT_OK %EXPORT_TAGS};
 BEGIN {
-	$VERSION     = '0.02';
+	$VERSION     = '0.03';
 	$IS_MACOS    = $^O eq 'MacOS';
 	@EXPORT_OK   = qw{dist_dir dist_file module_dir module_file};
 	%EXPORT_TAGS = (
@@ -338,11 +338,11 @@ Adam Kennedy E<lt>cpan@ali.asE<gt>, L<http://ali.as/>
 
 =head1 SEE ALSO
 
-L<Class::Inspector>, L<File::HomeDir>, L<Module::Install>, L<Module::Install::Share>
+L<File::HomeDir>, L<Module::Install>, L<Module::Install::Share>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2005 Adam Kennedy. All rights reserved.
+Copyright (c) 2005, 2006 Adam Kennedy. All rights reserved.
 This program is free software; you can redistribute
 it and/or modify it under the same terms as Perl itself.
 
