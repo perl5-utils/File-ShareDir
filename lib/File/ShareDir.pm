@@ -112,7 +112,7 @@ use Class::Inspector ();
 
 use vars qw{$VERSION $IS_MACOS @EXPORT_OK %EXPORT_TAGS};
 BEGIN {
-	$VERSION     = '0.03';
+	$VERSION     = '0.04';
 	$IS_MACOS    = $^O eq 'MacOS';
 	@EXPORT_OK   = qw{dist_dir dist_file module_dir module_file};
 	%EXPORT_TAGS = (
@@ -191,7 +191,7 @@ sub module_dir {
 	my $long   = Class::Inspector->loaded_filename($module);
 	$short =~ tr{/} {:} if $IS_MACOS;
 	substr( $short, -3, 3, '' );
-	$long  =~ m{^(.*)$short\.pm\z}s or die("Failed to find base dir");
+	$long  =~ m{^(.*)\Q$short\E\.pm\z}s or die("Failed to find base dir");
 	my $dir = File::Spec->catdir( "$1", 'auto', $short );
 	unless ( -d $dir ) {
 		croak("Directory '$dir', does not exist");
