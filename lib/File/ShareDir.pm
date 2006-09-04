@@ -112,7 +112,7 @@ use Class::Inspector ();
 
 use vars qw{$VERSION $IS_MACOS @EXPORT_OK %EXPORT_TAGS};
 BEGIN {
-	$VERSION     = '0.04';
+	$VERSION     = '0.05';
 	$IS_MACOS    = $^O eq 'MacOS';
 	@EXPORT_OK   = qw{dist_dir dist_file module_dir module_file};
 	%EXPORT_TAGS = (
