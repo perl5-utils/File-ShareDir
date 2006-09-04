@@ -1,5 +1,8 @@
 Revision history for Perl extension File::ShareDir
 
+0.05 Mon  4 Sep 2006
+	- Upgrading to Module::Install 0.64
+
 0.04 Tue May 9 2006
 	- Made module_dir work properly under MSWin32 (ishigaki)
 
