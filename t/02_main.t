@@ -1,22 +1,11 @@
-#!/usr/bin/perl -w
+#!/usr/bin/perl
 
-# Compile-testing for PITA::Report
+# Compile-testing for File::ShareDir
 
 use strict;
-use lib ();
-use File::Spec::Functions ':ALL';
 BEGIN {
-	$| = 1;
-	unless ( $ENV{HARNESS_ACTIVE} ) {
-		require FindBin;
-		$FindBin::Bin = $FindBin::Bin; # Avoid a warning
-		chdir catdir( $FindBin::Bin, updir() );
-		lib->import(
-			catdir('blib', 'lib'),
-			catdir('blib', 'arch'),
-			'lib',
-			);
-	}
+	$|  = 1;
+	$^W = 1;
 }
 
 use Test::More tests => 25;
@@ -47,7 +36,7 @@ ok( ! defined &dist_dir,    'dist_dir not imported by default'    );
 ok( ! defined &module_dir,  'module_dir not imported by default'  );
 ok( ! defined &dist_file,   'dist_file not imported by default'   );
 ok( ! defined &module_file, 'module_file not imported by default' );
-
+ok( ! defined &class_file,  'class_file not imported by default'  );
 use_ok( 'File::ShareDir', ':ALL' );
 
 # Import as needed
@@ -55,10 +44,11 @@ ok( defined &dist_dir,    'dist_dir imported'    );
 ok( defined &module_dir,  'module_dir imported'  );
 ok( defined &dist_file,   'dist_file imported'   );
 ok( defined &module_file, 'module_file imported' );
+ok( defined &class_file,  'class_file imported'  );
 
 # Allow all named functions
 use_ok( 'File::ShareDir',
-	'module_dir', 'module_file', 'dist_dir', 'dist_file',
+	'module_dir', 'module_file', 'dist_dir', 'dist_file', 'class_file'
 	);
 
 
@@ -89,12 +79,15 @@ dies( sub { module_dir() }, 'No params to module_dir dies' );
 dies( sub { module_dir('') }, 'Null param to module_dir dies' );
 dies( sub { module_dir('File::ShareDir::Bad') }, 'Getting module dir for known non-existanct module dies' );
 
+my $module_file = module_file('File::ShareDir', 'sample.txt');
+ok( -f $module_file, 'module_file ok' );
+
 
 
 
 
 #####################################################################
-# Distribution Tets
+# Distribution Tests
 
 my $dist_dir = dist_dir('File-ShareDir');
 ok( $dist_dir, 'Can find our own dist dir' );
@@ -110,3 +103,14 @@ ok( -r $dist_file, '... and have read permissions' );
 # Bug found in Module::Install 0.54, fixed in 0.55
 is( catfile($dist_dir, 'sample.txt'), $dist_file,
 	'dist_dir and dist_file find the same directory' );
+
+
+
+
+
+#####################################################################
+# Class Tests
+
+my $class_file = class_file('t::lib::ShareDir', 'sample.txt');
+ok( -f $class_file, 'class_file ok' );
+is( $class_file, $module_file, 'class_file matches module_file for subclass' );

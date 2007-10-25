@@ -19,7 +19,9 @@ File::ShareDir - Locate per-dist and per-module shared files
   # Find a specific file in our dist/module shared dir
   $file = dist_file(  'File-ShareDir',  'file/name.txt');
   $file = module_file('File::ShareDir', 'file/name.txt');
-
+  
+  # Like module_file, but search up the inheritance tree
+  $file = class_file( 'Foo::Bar', 'file/name.txt' );
 =head1 DESCRIPTION
 
 The intent of L<File::ShareDir> is to provide a companion to
@@ -110,15 +112,16 @@ use File::Spec       ();
 use Params::Util     '_CLASS';
 use Class::Inspector ();
 
-use vars qw{$VERSION $IS_MACOS @EXPORT_OK %EXPORT_TAGS};
+use vars qw{$VERSION @EXPORT_OK %EXPORT_TAGS};
 BEGIN {
-	$VERSION     = '0.05';
-	$IS_MACOS    = $^O eq 'MacOS';
-	@EXPORT_OK   = qw{dist_dir dist_file module_dir module_file};
+	$VERSION     = '1.06';
+	@EXPORT_OK   = qw{dist_dir dist_file module_dir module_file class_file};
 	%EXPORT_TAGS = (
 		ALL => [ @EXPORT_OK ],
 		);	
 }
+
+use constant IS_MACOS => !!($^O eq 'MacOS');
 
 
 
@@ -189,7 +192,7 @@ sub module_dir {
 	my $module = _MODULE(shift);
 	my $short  = Class::Inspector->filename($module);
 	my $long   = Class::Inspector->loaded_filename($module);
-	$short =~ tr{/} {:} if $IS_MACOS;
+	$short =~ tr{/} {:} if IS_MACOS;
 	substr( $short, -3, 3, '' );
 	$long  =~ m{^(.*)\Q$short\E\.pm\z}s or die("Failed to find base dir");
 	my $dir = File::Spec->catdir( "$1", 'auto', $short );
@@ -253,7 +256,7 @@ sub dist_file {
   # Find a file in our module shared dir
   my $dir = module_file('My::Module', 'file/name.txt');
 
-The C<dist_file> function takes two params of the module name
+The C<module_file> function takes two params of the module name
 and file name. It locates the module dir, and then finds the file within
 it, verifying that the file actually exists, and that it is readable.
 
@@ -283,6 +286,74 @@ sub module_file {
 	$path;
 }
 
+
+=pod
+
+=head2 class_file
+
+  # Find a file in our module shared dir, or in our parent class
+  my $dir = class_file('My::Module', 'file/name.txt');
+
+The C<module_file> function takes two params of the module name
+and file name. It locates the module dir, and then finds the file within
+it, verifying that the file actually exists, and that it is readable.
+
+In order to find the directory, the module B<must> be loaded when
+calling this function.
+
+The filename should be a relative path in the format of your local
+filesystem. It will simply added to the directory using L<File::Spec>'s
+C<catfile> method.
+
+If the file is NOT found for that module, C<class_file> will scan up
+the module's @ISA tree, looking for the file in all of the parent
+classes.
+
+This allows you to, in effect, "subclass" shared files.
+
+Returns the file path as a string, or dies if the file or the dist's
+directory cannot be located, or the file is not readable.
+
+=cut
+
+sub class_file {
+	my $module = _MODULE(shift);
+	my $file   = _FILE(shift);
+
+	# Get the super path ( not including UNIVERSAL )
+	# Rather than using Class::ISA, we'll use an inlined version
+	# that implements the same basic algorithm.
+	my @path  = ();
+	my @queue = ( $name );
+	my %seen  = ( $name => 1 );
+	while ( my $cl = shift @queue ) {
+		push @path, $cl;
+		no strict 'refs';
+		unshift @queue, grep { ! $seen{$_}++ }
+			map { s/^::/main::/; s/\'/::/g; $_ }
+			( @{"${cl}::ISA"} );
+	}
+
+	# Search up the path
+	foreach my $class ( @path ) {
+		my $dir = eval {
+			 module_dir($module);
+		};
+		next if $@;
+		my $path = File::Spec->catfile($dir, $file);
+		unless ( -e $path and -f _ ) {
+			next;
+		}
+		unless ( -e $path and -f _ ) {
+			
+		}
+		unless ( -r $path ) {
+			croak("File '$file' cannot be read, no read permissions");
+		}
+		return $path;
+	}
+	croak("File '$file' does not exist in class or parent shared files");
+}
 
 
 
