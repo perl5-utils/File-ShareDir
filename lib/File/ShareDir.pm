@@ -134,7 +134,7 @@ use constant IS_MACOS => !!($^O eq 'MacOS');
 
 =head2 dist_dir
 
-  # Get a distrubition's shared files directory
+  # Get a distribution's shared files directory
   my $dir = dist_dir('My-Distribution');
 
 The C<dist_dir> function takes a single parameter of the name of an
