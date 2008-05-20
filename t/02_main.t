@@ -8,7 +8,7 @@ BEGIN {
 	$^W = 1;
 }
 
-use Test::More tests => 25;
+use Test::More tests => 36;
 use File::ShareDir;
 
 sub dies {
@@ -82,7 +82,8 @@ dies( sub { module_dir('File::ShareDir::Bad') }, 'Getting module dir for known n
 my $module_file = module_file('File::ShareDir', 'sample.txt');
 ok( -f $module_file, 'module_file ok' );
 
-
+my $module_subdir = module_file('File::ShareDir', 'subdir');
+ok( -d $module_subdir, 'module_file (subdir) ok' );
 
 
 
@@ -99,9 +100,14 @@ ok( $dist_file, 'Can find our sample module file' );
 ok( -f $dist_file, '... and is a file' );
 ok( -r $dist_file, '... and have read permissions' );
 
+my $dist_subdir = dist_file('File-ShareDir', 'subdir');
+ok( $dist_subdir, 'Can find our sample subdir' );
+ok( -d $dist_subdir, '... and is a directory' );
+ok( -r $dist_subdir, '... and have read permissions' );
+
 # Make sure the directory in dist_dir, matches the one from dist_file
 # Bug found in Module::Install 0.54, fixed in 0.55
-is( catfile($dist_dir, 'sample.txt'), $dist_file,
+is( File::Spec->catfile($dist_dir, 'sample.txt'), $dist_file,
 	'dist_dir and dist_file find the same directory' );
 
 
@@ -111,6 +117,12 @@ is( catfile($dist_dir, 'sample.txt'), $dist_file,
 #####################################################################
 # Class Tests
 
+use t::lib::ShareDir;
 my $class_file = class_file('t::lib::ShareDir', 'sample.txt');
 ok( -f $class_file, 'class_file ok' );
 is( $class_file, $module_file, 'class_file matches module_file for subclass' );
+
+my $class_subdir = class_file('t::lib::ShareDir', 'subdir');
+ok( -d $class_subdir, 'class_file (subdir) ok' );
+is( $class_subdir, $module_subdir,
+  'class_file (subdir) matches module_file for subclass' );
