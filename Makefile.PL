@@ -1,6 +1,5 @@
 use inc::Module::Install;
 
-name           'File-ShareDir';
 all_from       'lib/File/ShareDir.pm';
 requires       'Carp'             => 0;
 requires       'Params::Util'     => '0.07';
