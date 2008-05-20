@@ -238,7 +238,7 @@ sub dist_file {
 	foreach my $inc ( @INC ) {
 		next unless defined $inc and ! ref $inc;
 		my $full = File::Spec->catdir( $inc, $path );
-		next unless -f $full;
+		next unless -e $full;
 		unless ( -r $full ) {
 			croak("Directory '$full', no read permissions");
 		}
@@ -277,7 +277,7 @@ sub module_file {
 	my $file   = _FILE(shift);
 	my $dir    = module_dir($module);
 	my $path   = File::Spec->catfile($dir, $file);
-	unless ( -e $path and -f _ ) {
+	unless ( -e $path ) {
 		croak("File '$file' does not exist in module dir");
 	}
 	unless ( -r $path ) {
@@ -324,8 +324,8 @@ sub class_file {
 	# Rather than using Class::ISA, we'll use an inlined version
 	# that implements the same basic algorithm.
 	my @path  = ();
-	my @queue = ( $name );
-	my %seen  = ( $name => 1 );
+	my @queue = ( $module );
+	my %seen  = ( $module => 1 );
 	while ( my $cl = shift @queue ) {
 		push @path, $cl;
 		no strict 'refs';
@@ -337,15 +337,12 @@ sub class_file {
 	# Search up the path
 	foreach my $class ( @path ) {
 		my $dir = eval {
-			 module_dir($module);
+			 module_dir($class);
 		};
 		next if $@;
 		my $path = File::Spec->catfile($dir, $file);
-		unless ( -e $path and -f _ ) {
+		unless ( -e $path ) {
 			next;
-		}
-		unless ( -e $path and -f _ ) {
-			
 		}
 		unless ( -r $path ) {
 			croak("File '$file' cannot be read, no read permissions");
