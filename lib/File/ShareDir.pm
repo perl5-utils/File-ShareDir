@@ -22,6 +22,7 @@ File::ShareDir - Locate per-dist and per-module shared files
   
   # Like module_file, but search up the inheritance tree
   $file = class_file( 'Foo::Bar', 'file/name.txt' );
+
 =head1 DESCRIPTION
 
 The intent of L<File::ShareDir> is to provide a companion to
@@ -106,19 +107,21 @@ exception.
 
 use 5.005;
 use strict;
-use base 'Exporter';
 use Carp             'croak';
+use Config           ();
+use Exporter         ();
 use File::Spec       ();
 use Params::Util     '_CLASS';
 use Class::Inspector ();
 
-use vars qw{$VERSION @EXPORT_OK %EXPORT_TAGS};
+use vars qw{$VERSION @ISA @EXPORT_OK %EXPORT_TAGS};
 BEGIN {
-	$VERSION     = '1.06';
-	@EXPORT_OK   = qw{dist_dir dist_file module_dir module_file class_file};
+	$VERSION     = '0.99_01';
+	@ISA         = qw{ Exporter };
+	@EXPORT_OK   = qw{ dist_dir dist_file module_dir module_file class_file };
 	%EXPORT_TAGS = (
 		ALL => [ @EXPORT_OK ],
-		);	
+	);	
 }
 
 use constant IS_MACOS => !!($^O eq 'MacOS');
@@ -152,7 +155,7 @@ sub dist_dir {
 	# Create the subpath
 	my $path = File::Spec->catdir(
 		'auto', split( /-/, $dist ),
-		);
+	);
 
 	# Find the full dir withing @INC
 	foreach my $inc ( @INC ) {
@@ -192,9 +195,9 @@ sub module_dir {
 	my $module = _MODULE(shift);
 	my $short  = Class::Inspector->filename($module);
 	my $long   = Class::Inspector->loaded_filename($module);
-	$short =~ tr{/} {:} if IS_MACOS;
+	$short =~ tr{/}{:} if IS_MACOS;
 	substr( $short, -3, 3, '' );
-	$long  =~ m{^(.*)\Q$short\E\.pm\z}s or die("Failed to find base dir");
+	$long  =~ m/^(.*)\Q$short\E\.pm\z/s or die("Failed to find base dir");
 	my $dir = File::Spec->catdir( "$1", 'auto', $short );
 	unless ( -d $dir ) {
 		croak("Directory '$dir', does not exist");
@@ -202,7 +205,7 @@ sub module_dir {
 	unless ( -r $dir ) {
 		croak("Directory '$dir', no read permissions");
 	}
-	return $dir;		
+	return $dir;
 }
 
 =pod
@@ -357,6 +360,25 @@ sub class_file {
 
 #####################################################################
 # Support Functions
+
+sub _dist_packfile {
+	my $module = shift;
+	my @dirs   = grep { -e } ( $Config{archlibexp}, $Config{sitearchexp} );
+	my $file   = File::Spec->catfile(
+		'auto', split( /::/, $module), '.packlist',
+	);
+
+	foreach my $dir ( @dirs ) {
+		my $path = File::Spec->catfile( $dir, $file );
+		next unless -f $path;
+
+		# Load the file
+		my $packlist = ExtUtils::Packlist->new($path);
+		unless ( $packlist ) {
+			die "Failed to load .packlist file for $module";
+		}
+
+}
 
 # Matches a valid distribution name
 ### This is a total guess at this point

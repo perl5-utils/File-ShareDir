@@ -1,6 +1,6 @@
 Revision history for Perl extension File::ShareDir
 
-1.06 Thu 25 Oct 2007
+0.99_01 Thu 25 Oct 2007
 	- Moving to a production version
 	- Updating tests a little
 	- Adding the class_file function
