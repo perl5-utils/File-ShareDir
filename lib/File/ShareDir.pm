@@ -118,7 +118,11 @@ use vars qw{$VERSION @ISA @EXPORT_OK %EXPORT_TAGS};
 BEGIN {
 	$VERSION     = '0.99_01';
 	@ISA         = qw{ Exporter };
-	@EXPORT_OK   = qw{ dist_dir dist_file module_dir module_file class_file };
+	@EXPORT_OK   = qw{
+		dist_dir dist_file
+		module_dir module_file
+		class_dir class_file
+	};
 	%EXPORT_TAGS = (
 		ALL => [ @EXPORT_OK ],
 	);	
@@ -151,6 +155,44 @@ located or is not readable.
 
 sub dist_dir {
 	my $dist = _DIST(shift);
+	my $dir;
+
+	# Try the new version
+	$dir = _dist_dir_new( $dist );
+	return $dir if defined $dir;
+
+	# Fall back to the legacy version
+	$dir = _dist_dir_old( $dist );
+	return $dir if defined $dir;
+
+	# Ran out of options
+	croak("Failed to find share dir for dist '$dist'");
+}
+
+sub _dist_dir_new {
+	my $dist = shift;
+
+	# Create the subpath
+	my $path = File::Spec->catdir(
+		'auto', 'share', 'dist', $dist,
+	);
+
+	# Find the full dir withing @INC
+	foreach my $inc ( @INC ) {
+		next unless defined $inc and ! ref $inc;
+		my $dir = File::Spec->catdir( $inc, $path );
+		next unless -d $dir;
+		unless ( -r $dir ) {
+			croak("Found directory '$dir', but no read permissions");
+		}
+		return $dir;
+	}
+
+	return undef;
+}
+
+sub _dist_dir_old {
+	my $dist = shift;
 
 	# Create the subpath
 	my $path = File::Spec->catdir(
@@ -163,13 +205,12 @@ sub dist_dir {
 		my $dir = File::Spec->catdir( $inc, $path );
 		next unless -d $dir;
 		unless ( -r $dir ) {
-			croak("Directory '$dir', no read permissions");
+			croak("Found directory '$dir', but no read permissions");
 		}
 		return $dir;
 	}
 
-	# Couldn't find it
-	croak("Failed to find share dir for dist '$dist'");
+	return undef;
 }
 
 =pod
@@ -193,6 +234,41 @@ located or is not readable.
 
 sub module_dir {
 	my $module = _MODULE(shift);
+	my $dir;
+
+	# Try the new version
+	$dir = _dist_dir_new( $module );
+	return $dir if defined $dir;
+
+	# Fall back to the legacy version
+	return _dist_dir_old( $module );
+}
+
+sub _module_dir_new {
+	my $module = shift;
+
+	# Create the subpath
+	my $path = File::Spec->catdir(
+		'auto', 'share', 'module',
+		_module_subdir( $module ),
+	);
+
+	# Find the full dir withing @INC
+	foreach my $inc ( @INC ) {
+		next unless defined $inc and ! ref $inc;
+		my $dir = File::Spec->catdir( $inc, $path );
+		next unless -d $dir;
+		unless ( -r $dir ) {
+			croak("Found directory '$dir', but no read permissions");
+		}
+		return $dir;
+	}
+
+	return undef;
+}
+	
+sub _module_dir_old {
+	my $module = shift;
 	my $short  = Class::Inspector->filename($module);
 	my $long   = Class::Inspector->loaded_filename($module);
 	$short =~ tr{/}{:} if IS_MACOS;
@@ -232,10 +308,42 @@ sub dist_file {
 	my $dist = _DIST(shift);
 	my $file = _FILE(shift);
 
+	# Try the new version first
+	my $path = _dist_file_new( $dist, $file );
+	return $path if defined $path;
+
+	# Hand off to the legacy version
+	return _dist_file_old( $dist, $file );;
+}
+
+sub _dist_file_new {
+	my $dist = shift;
+	my $file = shift;
+
+	# If it exists, what should the path be
+	my $dir  = _dist_dir_new( $dist );
+	my $path = File::Spec->catfile( $dir, $file );
+
+	# Does the file exist
+	return undef unless -e $path;
+	unless ( -f $path ) {
+		croak("Found dist_file '$path', but not a file");
+	}
+	unless ( -r $path ) {
+		croak("File '$path', no read permissions");
+	}
+
+	return $path;
+}
+
+sub _dist_file_old {
+	my $dist = shift;
+	my $file = shift;
+
 	# Create the subpath
-	my $path = File::Spec->catdir(
+	my $path = File::Spec->catfile(
 		'auto', split( /-/, $dist ), $file,
-		);
+	);
 
 	# Find the full dir withing @INC
 	foreach my $inc ( @INC ) {
@@ -278,6 +386,14 @@ directory cannot be located, or the file is not readable.
 sub module_file {
 	my $module = _MODULE(shift);
 	my $file   = _FILE(shift);
+
+	# Hand off to the legacy version
+	return _module_file_old( $module, $file, @_ );
+}
+
+sub _module_file_old {
+	my $module = shift;
+	my $file   = shift;
 	my $dir    = module_dir($module);
 	my $path   = File::Spec->catfile($dir, $file);
 	unless ( -e $path ) {
@@ -360,6 +476,12 @@ sub class_file {
 
 #####################################################################
 # Support Functions
+
+sub _module_subdir {
+	my $module = shift;
+	$module =~ s/::/-/g;
+	return $module;
+}
 
 sub _dist_packfile {
 	my $module = shift;
