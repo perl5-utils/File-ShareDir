@@ -8,7 +8,7 @@ BEGIN {
 	$^W = 1;
 }
 
-use Test::More tests => 36;
+use Test::More tests => 30;
 use File::ShareDir;
 
 sub dies {
@@ -47,9 +47,12 @@ ok( defined &module_file, 'module_file imported' );
 ok( defined &class_file,  'class_file imported'  );
 
 # Allow all named functions
-use_ok( 'File::ShareDir',
-	'module_dir', 'module_file', 'dist_dir', 'dist_file', 'class_file'
-	);
+use_ok(
+	'File::ShareDir',
+	'module_dir', 'module_file',
+	'dist_dir', 'dist_file',
+	'class_file',
+);
 
 
 
@@ -79,11 +82,10 @@ dies( sub { module_dir() }, 'No params to module_dir dies' );
 dies( sub { module_dir('') }, 'Null param to module_dir dies' );
 dies( sub { module_dir('File::ShareDir::Bad') }, 'Getting module dir for known non-existanct module dies' );
 
-my $module_file = module_file('File::ShareDir', 'sample.txt');
+my $module_file = module_file('File::ShareDir', 'test_file.txt');
 ok( -f $module_file, 'module_file ok' );
 
-my $module_subdir = module_file('File::ShareDir', 'subdir');
-ok( -d $module_subdir, 'module_file (subdir) ok' );
+
 
 
 
@@ -100,11 +102,6 @@ ok( $dist_file, 'Can find our sample module file' );
 ok( -f $dist_file, '... and is a file' );
 ok( -r $dist_file, '... and have read permissions' );
 
-my $dist_subdir = dist_file('File-ShareDir', 'subdir');
-ok( $dist_subdir, 'Can find our sample subdir' );
-ok( -d $dist_subdir, '... and is a directory' );
-ok( -r $dist_subdir, '... and have read permissions' );
-
 # Make sure the directory in dist_dir, matches the one from dist_file
 # Bug found in Module::Install 0.54, fixed in 0.55
 is( File::Spec->catfile($dist_dir, 'sample.txt'), $dist_file,
@@ -118,11 +115,6 @@ is( File::Spec->catfile($dist_dir, 'sample.txt'), $dist_file,
 # Class Tests
 
 use t::lib::ShareDir;
-my $class_file = class_file('t::lib::ShareDir', 'sample.txt');
+my $class_file = class_file('t::lib::ShareDir', 'test_file.txt');
 ok( -f $class_file, 'class_file ok' );
 is( $class_file, $module_file, 'class_file matches module_file for subclass' );
-
-my $class_subdir = class_file('t::lib::ShareDir', 'subdir');
-ok( -d $class_subdir, 'class_file (subdir) ok' );
-is( $class_subdir, $module_subdir,
-  'class_file (subdir) matches module_file for subclass' );

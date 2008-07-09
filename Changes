@@ -1,10 +1,11 @@
 Revision history for Perl extension File::ShareDir
 
 0.99_01 Thu 25 Oct 2007
-	- Moving to a production version
 	- Updating tests a little
 	- Adding the class_file function
 	- Allow *_file to find any kind of path, not just files (hdp)
+	- Localising $@ during evals
+	- Implementing the new sharedir model
 
 0.05 Mon  4 Sep 2006
 	- Upgrading to Module::Install 0.64

@@ -237,11 +237,11 @@ sub module_dir {
 	my $dir;
 
 	# Try the new version
-	$dir = _dist_dir_new( $module );
+	$dir = _module_dir_new( $module );
 	return $dir if defined $dir;
 
 	# Fall back to the legacy version
-	return _dist_dir_old( $module );
+	return _module_dir_old( $module );
 }
 
 sub _module_dir_new {
@@ -386,14 +386,6 @@ directory cannot be located, or the file is not readable.
 sub module_file {
 	my $module = _MODULE(shift);
 	my $file   = _FILE(shift);
-
-	# Hand off to the legacy version
-	return _module_file_old( $module, $file, @_ );
-}
-
-sub _module_file_old {
-	my $module = shift;
-	my $file   = shift;
 	my $dir    = module_dir($module);
 	my $path   = File::Spec->catfile($dir, $file);
 	unless ( -e $path ) {
@@ -404,7 +396,6 @@ sub _module_file_old {
 	}
 	$path;
 }
-
 
 =pod
 
@@ -455,8 +446,9 @@ sub class_file {
 
 	# Search up the path
 	foreach my $class ( @path ) {
+		local $@;
 		my $dir = eval {
-			 module_dir($class);
+		 	module_dir($class);
 		};
 		next if $@;
 		my $path = File::Spec->catfile($dir, $file);
@@ -485,7 +477,7 @@ sub _module_subdir {
 
 sub _dist_packfile {
 	my $module = shift;
-	my @dirs   = grep { -e } ( $Config{archlibexp}, $Config{sitearchexp} );
+	my @dirs   = grep { -e } ( $Config::Config{archlibexp}, $Config::Config{sitearchexp} );
 	my $file   = File::Spec->catfile(
 		'auto', split( /::/, $module), '.packlist',
 	);
@@ -500,6 +492,10 @@ sub _dist_packfile {
 			die "Failed to load .packlist file for $module";
 		}
 
+		die "CODE INCOMPLETE";
+	}
+
+	die "CODE INCOMPLETE";
 }
 
 # Matches a valid distribution name
@@ -542,11 +538,11 @@ Bugs should always be submitted via the CPAN bug tracker
 
 L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=File-ShareDir>
 
-For other issues, contact the maintainer
+For other issues, contact the maintainer.
 
 =head1 AUTHOR
 
-Adam Kennedy E<lt>adamk@cpan.orgE<gt>, L<http://ali.as/>
+Adam Kennedy E<lt>adamk@cpan.orgE<gt>
 
 =head1 SEE ALSO
 
@@ -554,7 +550,8 @@ L<File::HomeDir>, L<Module::Install>, L<Module::Install::Share>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2005, 2006 Adam Kennedy.
+Copyright 2005 - 2008 Adam Kennedy.
+
 This program is free software; you can redistribute
 it and/or modify it under the same terms as Perl itself.
 
