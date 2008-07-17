@@ -1,6 +1,9 @@
 Revision history for Perl extension File::ShareDir
 
-0.99_01 Thu 25 Oct 2007
+1.00 Thu 17 Jul 2008
+	- Everything appears ok, release prod
+
+0.99_01 Thu 10 Jul 2009
 	- Updating tests a little
 	- Adding the class_file function
 	- Allow *_file to find any kind of path, not just files (hdp)
