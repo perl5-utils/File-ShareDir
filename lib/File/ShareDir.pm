@@ -199,7 +199,7 @@ sub _dist_dir_old {
 		'auto', split( /-/, $dist ),
 	);
 
-	# Find the full dir withing @INC
+	# Find the full dir within @INC
 	foreach my $inc ( @INC ) {
 		next unless defined $inc and ! ref $inc;
 		my $dir = File::Spec->catdir( $inc, $path );
@@ -546,7 +546,8 @@ Adam Kennedy E<lt>adamk@cpan.orgE<gt>
 
 =head1 SEE ALSO
 
-L<File::HomeDir>, L<Module::Install>, L<Module::Install::Share>
+L<File::HomeDir>, L<Module::Install>, L<Module::Install::Share>,
+L<File::ShareDir::PAR>
 
 =head1 COPYRIGHT
 
