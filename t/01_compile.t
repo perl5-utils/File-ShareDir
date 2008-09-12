@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# Compile-testing for PITA::Report
+# Compile-testing for File::ShareDir
 
 use strict;
 BEGIN {
