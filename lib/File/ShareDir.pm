@@ -8,7 +8,7 @@ File::ShareDir - Locate per-dist and per-module shared files
 
 =head1 SYNOPSIS
 
-  use File::SharedDir ':ALL';
+  use File::ShareDir ':ALL';
   
   # Where are distribution-level shared data files kept
   $dir = dist_dir('File-ShareDir');
