@@ -1,5 +1,8 @@
 Revision history for Perl extension File::ShareDir
 
+x.yy
+  - Fix typo in documentation (Thanks, ribasushi)
+
 1.00 Thu 17 Jul 2008
 	- Everything appears ok, release prod
 
