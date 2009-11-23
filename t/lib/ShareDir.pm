@@ -4,7 +4,7 @@ use strict;
 
 use vars qw{$VERSION @ISA};
 BEGIN {
-	$VERSION = '1.06';
+	$VERSION = '1.01';
 	@ISA     = 'File::ShareDir';
 }
 

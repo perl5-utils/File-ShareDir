@@ -1,4 +1,4 @@
-use inc::Module::Install 0.76;
+use inc::Module::Install 0.91;
 
 all_from      'lib/File/ShareDir.pm';
 requires      'Carp'             => 0;
