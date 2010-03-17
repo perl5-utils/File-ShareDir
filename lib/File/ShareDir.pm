@@ -111,7 +111,6 @@ use Carp             'croak';
 use Config           ();
 use Exporter         ();
 use File::Spec       ();
-use Params::Util     '_CLASS';
 use Class::Inspector ();
 
 use vars qw{$VERSION @ISA @EXPORT_OK %EXPORT_TAGS};
@@ -496,6 +495,11 @@ sub _dist_packfile {
 	}
 
 	die "CODE INCOMPLETE";
+}
+
+# Inlined from Params::Util pure perl version
+sub _CLASS {
+    (defined $_[0] and ! ref $_[0] and $_[0] =~ m/^[^\W\d]\w*(?:::\w+)*\z/s) ? $_[0] : undef;
 }
 
 # Matches a valid distribution name
