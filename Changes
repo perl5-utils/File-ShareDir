@@ -1,5 +1,7 @@
 Revision history for Perl extension File-ShareDir
 
+1.02 Thu 18 Mar 2010
+	- Upgraded to Module::Install 0.95
         - Removed Params::Util dep (MIYAGAWA)
 
 1.01 Tue 24 Nov 2009
