@@ -502,6 +502,12 @@ sub _CLASS {
     (defined $_[0] and ! ref $_[0] and $_[0] =~ m/^[^\W\d]\w*(?:::\w+)*\z/s) ? $_[0] : undef;
 }
 
+
+# Maintainer note: The following private functions are used by
+#                  File::ShareDir::PAR. (It has to or else it would have to copy&fork)
+#                  So if you significantly change or even remove them, please
+#                  notify the File::ShareDir::PAR maintainer(s). Thank you!    
+
 # Matches a valid distribution name
 ### This is a total guess at this point
 sub _DIST {
