@@ -49,8 +49,10 @@ ok( defined &class_file,  'class_file imported'  );
 # Allow all named functions
 use_ok(
 	'File::ShareDir',
-	'module_dir', 'module_file',
-	'dist_dir', 'dist_file',
+	'module_dir',
+	'module_file',
+	'dist_dir',
+	'dist_file',
 	'class_file',
 );
 
@@ -61,10 +63,14 @@ use_ok(
 #####################################################################
 # Support Methods
 
-is( File::ShareDir::_MODULE('File::ShareDir'), 'File::ShareDir',
-	'_MODULE returns correct for known loaded module' );
-is( File::ShareDir::_DIST('File-ShareDir'), 'File-ShareDir',
-	'_DIST returns correct for known good dist' );
+is(
+	File::ShareDir::_MODULE('File::ShareDir'), 'File::ShareDir',
+	'_MODULE returns correct for known loaded module',
+);
+is(
+	File::ShareDir::_DIST('File-ShareDir'), 'File-ShareDir',
+	'_DIST returns correct for known good dist',
+);
 
 
 
@@ -80,7 +86,10 @@ ok( -r $module_dir, '... and have read permissions' );
 
 dies( sub { module_dir() }, 'No params to module_dir dies' );
 dies( sub { module_dir('') }, 'Null param to module_dir dies' );
-dies( sub { module_dir('File::ShareDir::Bad') }, 'Getting module dir for known non-existanct module dies' );
+dies(
+	sub { module_dir('File::ShareDir::Bad') },
+	'Getting module dir for known non-existanct module dies',
+);
 
 my $module_file = module_file('File::ShareDir', 'test_file.txt');
 ok( -f $module_file, 'module_file ok' );
@@ -104,8 +113,10 @@ ok( -r $dist_file, '... and have read permissions' );
 
 # Make sure the directory in dist_dir, matches the one from dist_file
 # Bug found in Module::Install 0.54, fixed in 0.55
-is( File::Spec->catfile($dist_dir, 'sample.txt'), $dist_file,
-	'dist_dir and dist_file find the same directory' );
+is(
+	File::Spec->catfile($dist_dir, 'sample.txt'), $dist_file,
+	'dist_dir and dist_file find the same directory',
+);
 
 
 
