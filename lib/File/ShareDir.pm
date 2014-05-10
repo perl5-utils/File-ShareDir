@@ -559,8 +559,9 @@ Adam Kennedy E<lt>adamk@cpan.orgE<gt>
 
 =head1 SEE ALSO
 
-L<File::HomeDir>, L<Module::Install>, L<Module::Install::Share>,
-L<File::ShareDir::PAR>
+L<File::ShareDir::Install>, L<File::HomeDir>,
+L<Module::Install>, L<Module::Install::Share>,
+L<File::ShareDir::PAR>, L<Dist::Zilla::Plugin::ShareDir>
 
 =head1 COPYRIGHT
 
