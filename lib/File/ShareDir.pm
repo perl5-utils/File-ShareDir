@@ -115,7 +115,7 @@ use Class::Inspector ();
 
 use vars qw{ $VERSION @ISA @EXPORT_OK %EXPORT_TAGS };
 BEGIN {
-	$VERSION     = '1.03';
+	$VERSION     = '1.101';
 	@ISA         = qw{ Exporter };
 	@EXPORT_OK   = qw{
 		dist_dir
