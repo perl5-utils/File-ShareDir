@@ -107,6 +107,8 @@ exception.
 
 use 5.005;
 use strict;
+use warnings;
+
 use Carp             ();
 use Config           ();
 use Exporter         ();
