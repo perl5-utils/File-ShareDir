@@ -7,19 +7,22 @@ eval "use File::ShareDir::Install;";
 $@ and eval "use lib qw,inc/File-ShareDir-Install,; use File::ShareDir::Install;";
 $@ and die $@;
 
-File::ShareDir::Install->VERSION('0.08');
+File::ShareDir::Install->VERSION('0.03');
 
 install_share('share');
 
 # Full version
-install_share(module => 'File::ShareDir' => 'foo');
+install_share( module => 'File::ShareDir' => 'foo' );
 
 my %RUN_DEPS = (
     'Carp'             => 0,
     'Class::Inspector' => '1.12',
     'File::Spec'       => '0.80',
 );
-my %BUILD_DEPS = ( 'ExtUtils::MakeMaker' => 0 );
+my %BUILD_DEPS = (
+    'ExtUtils::MakeMaker'     => 0,
+    'File::ShareDir::Install' => '0.03'
+);
 
 my %TEST_DEPS = (
     'Test::More' => 0.90,
@@ -52,13 +55,13 @@ WriteMakefile1(
                 },
             },
             configure => {
-                requires   => { %BUILD_DEPS },
+                requires   => {%BUILD_DEPS},
                 recommends => { 'File::ShareDir::Install' => '0.08' }
             },
             build   => { requires => {%BUILD_DEPS} },
             test    => { requires => {%TEST_DEPS} },
             runtime => {
-                requires => { %RUN_DEPS },
+                requires => {%RUN_DEPS},
             },
         },
     },
