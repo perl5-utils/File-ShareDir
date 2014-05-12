@@ -1,5 +1,11 @@
 Revision history for Perl extension File-ShareDir
 
+1.02	2014-05-12
+    - Fix RT#95572 "necessary test files not copied into blib"
+      Thanks to Graham Knop for fixing and Zefram for reporting
+    - Explicitely require warnings as runtime prerequisite
+      Thanks to Graham Knop for reporting
+
 1.101	2014-05-10
     - Reformat Changes according to CPAN::Changes::Spec
     - Switch to EU::MM
