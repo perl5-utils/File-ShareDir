@@ -1,0 +1,15 @@
+/MANIFEST
+/MANIFEST.bak
+/META.*
+/MYMETA.*
+/Makefile
+/Makefile.old
+/README
+/blib/
+/pm_to_blib
+*~
+*#
+.#*
+/File-ShareDir-*/
+/File-ShareDir-*.tar.gz
+/cover_db/
