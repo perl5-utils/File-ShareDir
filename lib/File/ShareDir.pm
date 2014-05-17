@@ -552,6 +552,49 @@ sub _FILE {
 
 =pod
 
+=head1 EXTENDING
+
+=head2 Overriding Directory Resolution
+
+C<File::ShareDir> has two convenience hashes for people who have advanced usage
+requirements of C<File::ShareDir> such as using uninstalled C<share>
+directories during development.
+
+  #
+  # Dist-Name => /absolute/path/for/DistName/share/dir
+  #
+  %File::ShareDir::DIST_SHARE
+
+  #
+  # Module::Name => /absolute/path/for/Module/Name/share/dir
+  #
+  %File::ShareDir::MODULE_SHARE
+
+Setting these values any time before the corresponding calls
+
+  dist_dir('Dist-Name')
+  dist_file('Dist-Name','some/file');
+
+  module_dir('Module::Name');
+  module_file('Module::Name','some/file');
+
+Will override the base directory for resolving those calls.
+
+An example of where this would be useful is in a test for a module that depends
+on files installed into a share dir, to enable the tests to use the development
+copy without needing to install them first.
+
+  use File::ShareDir;
+  use Cwd qw( getcwd );
+  use File::Spec::Functions qw( rel2abs catdir );
+
+  $File::ShareDir::MODULE_SHARE{'Foo::Module'} = rel2abs(catfile(getcwd,'share'));
+
+  use Foo::Module;
+
+  # interal calls in Foo::Module to module_file('Foo::Module','bar') now resolves to
+  # the source trees share/ directory instead of something in @INC
+
 =head1 SUPPORT
 
 Bugs should always be submitted via the CPAN bug tracker
