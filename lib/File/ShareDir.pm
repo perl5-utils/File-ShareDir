@@ -115,7 +115,7 @@ use Exporter         ();
 use File::Spec       ();
 use Class::Inspector ();
 
-use vars qw{ $VERSION @ISA @EXPORT_OK %EXPORT_TAGS };
+use vars qw{ $VERSION @ISA @EXPORT_OK %EXPORT_TAGS %DIST_SHARE %MODULE_SHARE };
 BEGIN {
 	$VERSION     = '1.104';
 	@ISA         = qw{ Exporter };
@@ -175,6 +175,8 @@ sub dist_dir {
 
 sub _dist_dir_new {
 	my $dist = shift;
+
+	return $DIST_SHARE{$dist} if exists $DIST_SHARE{$dist};
 
 	# Create the subpath
 	my $path = File::Spec->catdir(
@@ -238,6 +240,9 @@ located or is not readable.
 
 sub module_dir {
 	my $module = _MODULE(shift);
+
+	return $MODULE_SHARE{$module} if exists $MODULE_SHARE{$module};
+
 	my $dir;
 
 	# Try the new version
