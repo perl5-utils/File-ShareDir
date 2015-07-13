@@ -1,6 +1,6 @@
 package File::ShareDir::Install;
 
-use 5.008;
+use 5.006; # minimum for "our"
 use strict;
 use warnings;
 

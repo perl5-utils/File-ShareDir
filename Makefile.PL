@@ -26,7 +26,7 @@ my %TEST_DEPS = (
 );
 
 WriteMakefile1(
-    MIN_PERL_VERSION => '5.008001',
+    MIN_PERL_VERSION => '5.006000',   # inc/File-ShareDir-Install minimum
     META_ADD         => {
         'meta-spec' => { version => 2 },
         resources   => {
