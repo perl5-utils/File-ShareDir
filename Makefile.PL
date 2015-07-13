@@ -3,14 +3,8 @@ use warnings;
 
 use ExtUtils::MakeMaker;
 
-BEGIN
-{
-    eval "use File::ShareDir::Install;";
-    $@ and eval "use lib qw,inc/File-ShareDir-Install,; use File::ShareDir::Install;";
-    $@ and die $@;
-}
-
-use File::ShareDir::Install 0.03;
+use lib 'inc/File-ShareDir-Install';
+use File::ShareDir::Install;
 
 install_share 'share';
 
@@ -25,7 +19,6 @@ my %RUN_DEPS = (
 );
 my %BUILD_DEPS = (
     'ExtUtils::MakeMaker'     => 0,
-    'File::ShareDir::Install' => '0.03'
 );
 
 my %TEST_DEPS = (
@@ -33,7 +26,7 @@ my %TEST_DEPS = (
 );
 
 WriteMakefile1(
-    MIN_PERL_VERSION => '5.008001',
+    MIN_PERL_VERSION => '5.006000',   # inc/File-ShareDir-Install minimum
     META_ADD         => {
         'meta-spec' => { version => 2 },
         resources   => {
@@ -60,7 +53,6 @@ WriteMakefile1(
             },
             configure => {
                 requires   => {%BUILD_DEPS},
-                recommends => { 'File::ShareDir::Install' => '0.08' }
             },
             build   => { requires => {%BUILD_DEPS} },
             test    => { requires => {%TEST_DEPS} },
