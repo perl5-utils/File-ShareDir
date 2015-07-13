@@ -9,7 +9,7 @@ use Carp;
 use File::Spec;
 use IO::Dir;
 
-our $VERSION = '0.08';
+our $VERSION = '0.10';
 
 our @DIRS;
 our %ALREADY;
@@ -134,7 +134,6 @@ sub __postamble_share_dir
 
     my $dir = $def->{dir};
 
-    $DB::single = 1;
     my( $idir );
 
     if( $def->{type} eq 'delete-dist' ) {
@@ -216,7 +215,7 @@ sub _scan_share_dir
             else {
                 next if $entry =~ /^\./;
             }
-            _scan_share_dir( $files, File::Spec->catdir( $idir, $entry ), $full );
+            _scan_share_dir( $files, File::Spec->catdir( $idir, $entry ), $full, $def );
         }
     }
 }
