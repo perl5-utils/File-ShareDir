@@ -181,18 +181,7 @@ sub _dist_dir_new {
 		'auto', 'share', 'dist', $dist,
 	);
 
-	# Find the full dir withing @INC
-	foreach my $inc ( @INC ) {
-		next unless defined $inc and ! ref $inc;
-		my $dir = File::Spec->catdir( $inc, $path );
-		next unless -d $dir;
-		unless ( -r $dir ) {
-			Carp::croak("Found directory '$dir', but no read permissions");
-		}
-		return $dir;
-	}
-
-	return undef;
+    return _search_inc_path($path);
 }
 
 sub _dist_dir_old {
@@ -203,18 +192,7 @@ sub _dist_dir_old {
 		'auto', split( /-/, $dist ),
 	);
 
-	# Find the full dir within @INC
-	foreach my $inc ( @INC ) {
-		next unless defined $inc and ! ref $inc;
-		my $dir = File::Spec->catdir( $inc, $path );
-		next unless -d $dir;
-		unless ( -r $dir ) {
-			Carp::croak("Found directory '$dir', but no read permissions");
-		}
-		return $dir;
-	}
-
-	return undef;
+    return _search_inc_path($path);
 }
 
 =pod
@@ -257,18 +235,7 @@ sub _module_dir_new {
 		_module_subdir( $module ),
 	);
 
-	# Find the full dir withing @INC
-	foreach my $inc ( @INC ) {
-		next unless defined $inc and ! ref $inc;
-		my $dir = File::Spec->catdir( $inc, $path );
-		next unless -d $dir;
-		unless ( -r $dir ) {
-			Carp::croak("Found directory '$dir', but no read permissions");
-		}
-		return $dir;
-	}
-
-	return undef;
+    return _search_inc_path($path);
 }
 	
 sub _module_dir_old {
@@ -349,19 +316,10 @@ sub _dist_file_old {
 		'auto', split( /-/, $dist ), $file,
 	);
 
-	# Find the full dir withing @INC
-	foreach my $inc ( @INC ) {
-		next unless defined $inc and ! ref $inc;
-		my $full = File::Spec->catdir( $inc, $path );
-		next unless -e $full;
-		unless ( -r $full ) {
-			Carp::croak("Directory '$full', no read permissions");
-		}
-		return $full;
-	}
-
-	# Couldn't find it
-	Carp::croak("Failed to find shared file '$file' for dist '$dist'");
+    my $dir = _search_inc_path($path) || 
+        Carp::croak("Failed to find shared file '$file' for dist '$dist'");
+        
+    return $dir;
 }
 
 =pod
@@ -472,6 +430,27 @@ sub class_file {
 
 #####################################################################
 # Support Functions
+
+sub _search_inc_path {
+
+    my $path = shift;
+
+	# Find the full dir withing @INC
+	foreach my $inc ( @INC ) {
+        # NOTE: This allows objects in @INC to provide the
+        # directory by overloading stringification, and still
+        # skips references correctly. 
+		next unless (defined $inc && -d "$inc");
+		my $dir = File::Spec->catdir( $inc, $path );
+		next unless -d $dir;
+		unless ( -r $dir ) {
+			Carp::croak("Found directory '$dir', but no read permissions");
+		}
+		return $dir;
+	}
+
+	return undef;
+}
 
 sub _module_subdir {
 	my $module = shift;
