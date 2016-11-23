@@ -1,4 +1,4 @@
-package t::lib::ShareDir;
+package ShareDir;
 
 use strict;
 

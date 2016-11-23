@@ -125,7 +125,8 @@ is(
 #####################################################################
 # Class Tests
 
-use t::lib::ShareDir;
-my $class_file = class_file('t::lib::ShareDir', 'test_file.txt');
+use lib 't/lib';
+use ShareDir;
+my $class_file = class_file('ShareDir', 'test_file.txt');
 ok( -f $class_file, 'class_file ok' );
 is( $class_file, $module_file, 'class_file matches module_file for subclass' );
