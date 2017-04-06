@@ -1,6 +1,6 @@
 ---
 install:
-  - cpanm --notest App::mymeta_requires
+  - cpanm --notest App::mymeta_requires inc::latest File::ShareDir::Install
   - perl Makefile.PL
   - make manifest
   - mymeta-requires --runtime --build --test --configure --develop --recommends --suggests | cpanm
