@@ -115,7 +115,7 @@ use Exporter         ();
 use File::Spec       ();
 use Class::Inspector ();
 
-use vars qw{ $VERSION @ISA @EXPORT_OK %EXPORT_TAGS };
+use vars qw{ $VERSION @ISA @EXPORT_OK %EXPORT_TAGS %DIST_SHARE %MODULE_SHARE };
 BEGIN {
 	$VERSION     = '1.104';
 	@ISA         = qw{ Exporter };
@@ -175,6 +175,8 @@ sub dist_dir {
 
 sub _dist_dir_new {
 	my $dist = shift;
+
+	return $DIST_SHARE{$dist} if exists $DIST_SHARE{$dist};
 
 	# Create the subpath
 	my $path = File::Spec->catdir(
@@ -238,6 +240,9 @@ located or is not readable.
 
 sub module_dir {
 	my $module = _MODULE(shift);
+
+	return $MODULE_SHARE{$module} if exists $MODULE_SHARE{$module};
+
 	my $dir;
 
 	# Try the new version
@@ -546,6 +551,49 @@ sub _FILE {
 1;
 
 =pod
+
+=head1 EXTENDING
+
+=head2 Overriding Directory Resolution
+
+C<File::ShareDir> has two convenience hashes for people who have advanced usage
+requirements of C<File::ShareDir> such as using uninstalled C<share>
+directories during development.
+
+  #
+  # Dist-Name => /absolute/path/for/DistName/share/dir
+  #
+  %File::ShareDir::DIST_SHARE
+
+  #
+  # Module::Name => /absolute/path/for/Module/Name/share/dir
+  #
+  %File::ShareDir::MODULE_SHARE
+
+Setting these values any time before the corresponding calls
+
+  dist_dir('Dist-Name')
+  dist_file('Dist-Name','some/file');
+
+  module_dir('Module::Name');
+  module_file('Module::Name','some/file');
+
+Will override the base directory for resolving those calls.
+
+An example of where this would be useful is in a test for a module that depends
+on files installed into a share dir, to enable the tests to use the development
+copy without needing to install them first.
+
+  use File::ShareDir;
+  use Cwd qw( getcwd );
+  use File::Spec::Functions qw( rel2abs catdir );
+
+  $File::ShareDir::MODULE_SHARE{'Foo::Module'} = rel2abs(catfile(getcwd,'share'));
+
+  use Foo::Module;
+
+  # interal calls in Foo::Module to module_file('Foo::Module','bar') now resolves to
+  # the source trees share/ directory instead of something in @INC
 
 =head1 SUPPORT
 
