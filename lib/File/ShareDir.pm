@@ -137,9 +137,7 @@ BEGIN {
 }
 
 use constant IS_MACOS => !! ($^O eq 'MacOS');
-
-
-
+use constant IS_WIN32 => !! ($^O eq 'MSWin32');
 
 
 #####################################################################
@@ -255,6 +253,8 @@ sub _module_dir_old {
 	my $short  = Class::Inspector->filename($module);
 	my $long   = Class::Inspector->loaded_filename($module);
 	$short =~ tr{/}{:} if IS_MACOS;
+	$short =~ tr{\\} {/} if IS_WIN32;
+	$long =~ tr{\\} {/} if IS_WIN32;
 	substr( $short, -3, 3, '' );
 	$long  =~ m/^(.*)\Q$short\E\.pm\z/s or die("Failed to find base dir");
 	my $dir = File::Spec->catdir( "$1", 'auto', $short );
