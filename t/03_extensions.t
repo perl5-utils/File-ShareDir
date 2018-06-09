@@ -20,18 +20,11 @@ my $FAKE_MODULE = 'Fake::Sample::Module';
 $File::ShareDir::DIST_SHARE{$FAKE_DIST}     = getcwd;
 $File::ShareDir::MODULE_SHARE{$FAKE_MODULE} = getcwd;
 
-is( dist_dir($FAKE_DIST), getcwd,
-    "Fake distribution resolves to forced value" );
-ok(
-    -f dist_file( $FAKE_DIST, 't/03_extensions.t' ),
-    "Fake distribution resolves to forced value with a file"
-);
+is(dist_dir($FAKE_DIST), getcwd, "Fake distribution resolves to forced value");
+ok(-f dist_file($FAKE_DIST, 't/03_extensions.t'), "Fake distribution resolves to forced value with a file");
 
-is( module_dir($FAKE_MODULE), getcwd, "Fake module resolves to forced value" );
-ok(
-    -f module_file( $FAKE_MODULE, 't/03_extensions.t' ),
-    "Fake module resolves to forced value with a file"
-);
+is(module_dir($FAKE_MODULE), getcwd, "Fake module resolves to forced value");
+ok(-f module_file($FAKE_MODULE, 't/03_extensions.t'), "Fake module resolves to forced value with a file");
 
 done_testing;
 
