@@ -330,7 +330,8 @@ sub _dist_file_new {
 	my $file = shift;
 
 	# If it exists, what should the path be
-	my $dir  = _dist_dir_new( $dist );
+	my $dir = _dist_dir_new( $dist );
+	return undef unless defined $dir;
 	my $path = File::Spec->catfile( $dir, $file );
 
 	# Does the file exist
