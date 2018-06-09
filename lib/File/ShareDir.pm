@@ -75,8 +75,12 @@ Once the files have been installed to the correct directory,
 you can use C<File::ShareDir> to find your files again after
 the installation.
 
-For the installation half of the solution, see L<Module::Install>
+For the installation half of the solution, see L<File::ShareDir::Install>
 and its C<install_share> directive.
+
+Using L<File::ShareDir::Install> together with L<File::ShareDir>
+allows one to rely on the files in appropriate C<dist_dir()>
+or C<module_dir()> in development phase, too.
 
 =head1 FUNCTIONS
 
