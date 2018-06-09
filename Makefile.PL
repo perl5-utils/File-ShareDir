@@ -67,6 +67,8 @@ WriteMakefile1(
                 requires => {
                     'Test::CPAN::Changes'                 => 0,
                     'Test::CheckManifest'                 => 0,
+                    'Module::CPANTS::Analyse'             => '0.96',
+                    'Test::Kwalitee'                      => 0,
                     'Test::PerlTidy'                      => 0,
                     'Test::Pod'                           => 0,
                     'Test::Pod::Coverage'                 => 0,
