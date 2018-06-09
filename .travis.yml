@@ -1,23 +1,34 @@
 ---
 install:
   - cpanm --notest inc::latest File::ShareDir::Install
+  - git clone git://github.com/travis-perl/helpers.git travis-perl-helpers
+  - source travis-perl-helpers/init
   - perl Makefile.PL
   - make manifest
   - cpanm --notest --with-recommends --with-suggests --with-develop --installdeps .
+  - cpan-install --coverage
 language: perl
 perl:
+  - "5.26"
   - "5.24-shrplib"
   - "5.24"
   - "5.22-shrplib"
   - "5.22"
   - "5.20-shrplib"
-  - "5.20-extras"
   - "5.20"
   - "5.18-shrplib"
-  - "5.18-extras"
   - "5.18"
   - "5.16"
   - "5.14"
   - "5.12"
   - "5.10"
   - "5.8"
+sudo: false
+matrix:
+  include:
+    - perl: "5.26"
+      env: COVERAGE=1
+before_script:
+  - coverage-setup
+after_success:
+  - coverage-report
