@@ -71,6 +71,7 @@ WriteMakefile1(
                     'Test::Pod'                           => 0,
                     'Test::Pod::Coverage'                 => 0,
                     'Test::Pod::Spelling::CommonMistakes' => 0,
+                    'Test::Spelling'                      => 0,
                     %BUNDLE_CONFIGURE_DEPS,
                 },
             },
