@@ -275,8 +275,8 @@ sub _module_dir_old
   # Find a file in our distribution shared dir
   my $dir = dist_file('My-Distribution', 'file/name.txt');
 
-The C<dist_file> function takes two params of the distribution name
-and file name, locates the dist dir, and then finds the file within
+The C<dist_file> function takes two parameters of the distribution name
+and file name, locates the dist directory, and then finds the file within
 it, verifying that the file actually exists, and that it is readable.
 
 The filename should be a relative path in the format of your local
@@ -345,9 +345,9 @@ sub _dist_file_old
   # Find a file in our module shared dir
   my $dir = module_file('My::Module', 'file/name.txt');
 
-The C<module_file> function takes two params of the module name
-and file name. It locates the module dir, and then finds the file within
-it, verifying that the file actually exists, and that it is readable.
+The C<module_file> function takes two parameters of the module name
+and file name. It locates the module directory, and then finds the file
+within it, verifying that the file actually exists, and that it is readable.
 
 In order to find the directory, the module B<must> be loaded when
 calling this function.
@@ -385,9 +385,9 @@ sub module_file
   # Find a file in our module shared dir, or in our parent class
   my $dir = class_file('My::Module', 'file/name.txt');
 
-The C<module_file> function takes two params of the module name
-and file name. It locates the module dir, and then finds the file within
-it, verifying that the file actually exists, and that it is readable.
+The C<module_file> function takes two parameters of the module name
+and file name. It locates the module directory, and then finds the file
+within it, verifying that the file actually exists, and that it is readable.
 
 In order to find the directory, the module B<must> be loaded when
 calling this function.
@@ -577,9 +577,9 @@ Setting these values any time before the corresponding calls
 
 Will override the base directory for resolving those calls.
 
-An example of where this would be useful is in a test for a module that depends
-on files installed into a share dir, to enable the tests to use the development
-copy without needing to install them first.
+An example of where this would be useful is in a test for a module that
+depends on files installed into a share directory, to enable the tests
+to use the development copy without needing to install them first.
 
   use File::ShareDir;
   use Cwd qw( getcwd );
