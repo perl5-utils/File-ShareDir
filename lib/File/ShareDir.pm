@@ -113,33 +113,31 @@ use 5.005;
 use strict;
 use warnings;
 
+use base ('Exporter');
+use constant IS_MACOS => !!($^O eq 'MacOS');
+use constant IS_WIN32 => !!($^O eq 'MSWin32');
+
 use Carp             ();
-use Config           ();
 use Exporter         ();
 use File::Spec       ();
 use Class::Inspector ();
 
-use vars qw{ $VERSION @ISA @EXPORT_OK %EXPORT_TAGS %DIST_SHARE %MODULE_SHARE };
+our %DIST_SHARE;
+our %MODULE_SHARE;
 
-BEGIN
-{
-    $VERSION   = '1.104';
-    @ISA       = qw{ Exporter };
-    @EXPORT_OK = qw{
-      dist_dir
-      dist_file
-      module_dir
-      module_file
-      class_dir
-      class_file
-    };
-    %EXPORT_TAGS = (
-        ALL => [@EXPORT_OK],
-    );
-}
-
-use constant IS_MACOS => !!($^O eq 'MacOS');
-use constant IS_WIN32 => !!($^O eq 'MSWin32');
+our @CARP_NOT;
+our @EXPORT_OK = qw{
+  dist_dir
+  dist_file
+  module_dir
+  module_file
+  class_dir
+  class_file
+};
+our %EXPORT_TAGS = (
+    ALL => [@EXPORT_OK],
+);
+our $VERSION = '1.104';
 
 #####################################################################
 # Interface Functions
@@ -256,7 +254,7 @@ sub _module_dir_old
     $short =~ tr{\\} {/} if IS_WIN32;
     $long =~ tr{\\} {/}  if IS_WIN32;
     substr($short, -3, 3, '');
-    $long =~ m/^(.*)\Q$short\E\.pm\z/s or die("Failed to find base dir");
+    $long =~ m/^(.*)\Q$short\E\.pm\z/s or Carp::croak("Failed to find base dir");
     my $dir = File::Spec->catdir("$1", 'auto', $short);
 
     unless (-d $dir)
@@ -377,7 +375,7 @@ sub module_file
     {
         Carp::croak("File '$file' cannot be read, no read permissions");
     }
-    $path;
+    return $path;
 }
 
 =pod
@@ -423,26 +421,19 @@ sub class_file
     while (my $cl = shift @queue)
     {
         push @path, $cl;
-        no strict 'refs';
+        no strict 'refs';    ## no critic (TestingAndDebugging::ProhibitNoStrict)
         unshift @queue, grep { !$seen{$_}++ }
-          map { s/^::/main::/; s/\'/::/g; $_ } (@{"${cl}::ISA"});
+          map { my $s = $_; $s =~ s/^::/main::/; $s =~ s/\'/::/g; $s } (@{"${cl}::ISA"});
     }
 
     # Search up the path
     foreach my $class (@path)
     {
-        local $@;
         my $dir = eval { module_dir($class); };
         next if $@;
         my $path = File::Spec->catfile($dir, $file);
-        unless (-e $path)
-        {
-            next;
-        }
-        unless (-r $path)
-        {
-            Carp::croak("File '$file' cannot be read, no read permissions");
-        }
+        -e $path or next;
+        -r $path or Carp::croak("File '$file' cannot be read, no read permissions");
         return $path;
     }
     Carp::croak("File '$file' does not exist in class or parent shared files");
@@ -459,13 +450,13 @@ sub _search_inc_path
     # Find the full dir within @INC
     foreach my $inc (@INC)
     {
-        next unless defined $inc and !ref $inc;
+        defined $inc or next;
+        ref $inc and next;
+
         my $dir = File::Spec->catdir($inc, $path);
         next unless -d $dir;
-        unless (-r $dir)
-        {
-            croak("Found directory '$dir', but no read permissions");
-        }
+
+        -r $dir or croak("Found directory '$dir', but no read permissions");
         return $dir;
     }
 
@@ -479,11 +470,13 @@ sub _module_subdir
     return $module;
 }
 
-sub _dist_packfile
+sub _dist_packfile    ## no critic (Subroutines::ProhibitUnusedPrivateSubroutines)
 {
     my $module = shift;
-    my @dirs   = grep { -e } ($Config::Config{archlibexp}, $Config::Config{sitearchexp});
-    my $file   = File::Spec->catfile('auto', split(/::/, $module), '.packlist',);
+    use Config ();
+    ## no critic (Variables::ProhibitPackageVars)
+    my @dirs = grep { -e } ($Config::Config{archlibexp}, $Config::Config{sitearchexp});
+    my $file = File::Spec->catfile('auto', split(/::/, $module), '.packlist',);
 
     foreach my $dir (@dirs)
     {
@@ -492,21 +485,34 @@ sub _dist_packfile
 
         # Load the file
         my $packlist = ExtUtils::Packlist->new($path);
-        unless ($packlist)
-        {
-            die "Failed to load .packlist file for $module";
-        }
+        $packlist or Carp::croak("Failed to load .packlist file for $module");
 
-        die "CODE INCOMPLETE";
+        Carp::croak("CODE INCOMPLETE");
     }
 
-    die "CODE INCOMPLETE";
+    Carp::croak("CODE INCOMPLETE");
 }
 
-# Inlined from Params::Util pure perl version
-sub _CLASS
+## no critic (BuiltinFunctions::ProhibitStringyEval)
+if (eval "use Params::Util; 1;")
 {
-    (defined $_[0] and !ref $_[0] and $_[0] =~ m/^[^\W\d]\w*(?:::\w+)*\z/s) ? $_[0] : undef;
+    Params::Util->import("_CLASS", "_STRING");
+}
+else
+{
+    ## no critic (ErrorHandling::RequireCheckingReturnValueOfEval)
+    eval <<'END_OF_BORROWED_CODE';
+# Inlined from Params::Util pure perl version
+sub _CLASS ($)
+{
+    return (defined $_[0] and !ref $_[0] and $_[0] =~ m/^[^\W\d]\w*(?:::\w+)*\z/s) ? $_[0] : undef;
+}
+
+sub _STRING ($)
+{
+    (defined $_[0] and ! ref $_[0] and length($_[0])) ? $_[0] : undef;
+}
+END_OF_BORROWED_CODE
 }
 
 # Maintainer note: The following private functions are used by
@@ -516,12 +522,9 @@ sub _CLASS
 
 # Matches a valid distribution name
 ### This is a total guess at this point
-sub _DIST
+sub _DIST    ## no critic (Subroutines::RequireArgUnpacking)
 {
-    if (defined $_[0] and !ref $_[0] and $_[0] =~ /^[a-z0-9+_-]+$/is)
-    {
-        return shift;
-    }
+    defined _STRING($_[0]) and $_[0] =~ /^[a-z0-9+_-]+$/is and return $_[0];
     Carp::croak("Not a valid distribution name");
 }
 
@@ -529,10 +532,7 @@ sub _DIST
 sub _MODULE
 {
     my $module = _CLASS(shift) or Carp::croak("Not a valid module name");
-    if (Class::Inspector->loaded($module))
-    {
-        return $module;
-    }
+    Class::Inspector->loaded($module) and return $module;
     Carp::croak("Module '$module' is not loaded");
 }
 
@@ -540,15 +540,9 @@ sub _MODULE
 sub _FILE
 {
     my $file = shift;
-    unless (defined $file and !ref $file and length $file)
-    {
-        Carp::croak("Did not pass a file name");
-    }
-    if (File::Spec->file_name_is_absolute($file))
-    {
-        Carp::croak("Cannot use absolute file name '$file'");
-    }
-    $file;
+    _STRING($file) or Carp::croak("Did not pass a file name");
+    File::Spec->file_name_is_absolute($file) and Carp::croak("Cannot use absolute file name '$file'");
+    return $file;
 }
 
 1;

@@ -69,6 +69,7 @@ WriteMakefile1(
                     'Test::CheckManifest'                 => 0,
                     'Module::CPANTS::Analyse'             => '0.96',
                     'Test::Kwalitee'                      => 0,
+                    'Test::Perl::Critic'                  => 0,
                     'Test::PerlTidy'                      => 0,
                     'Test::Pod'                           => 0,
                     'Test::Pod::Coverage'                 => 0,
@@ -84,7 +85,8 @@ WriteMakefile1(
             build   => {requires => {%BUILD_DEPS}},
             test    => {requires => {%TEST_DEPS}},
             runtime => {
-                requires => {%RUN_DEPS},
+                requires   => {%RUN_DEPS},
+                recommends => {'Params::Util' => '1.07'},
             },
         },
     },
