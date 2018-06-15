@@ -418,28 +418,48 @@ sub class_file
     Carp::croak("File '$file' does not exist in class or parent shared files");
 }
 
+## no critic (BuiltinFunctions::ProhibitStringyEval)
+if (eval "use List::MoreUtils 0.428; 1;")
+{
+    List::MoreUtils->import("firstres");
+}
+else
+{
+    ## no critic (ErrorHandling::RequireCheckingReturnValueOfEval)
+    eval <<'END_OF_BORROWED_CODE';
+sub firstres (&@)
+{
+    my $test = shift;
+    foreach (@_)
+    {
+        my $testval = $test->();
+        $testval and return $testval;
+    }
+    return undef;
+}
+END_OF_BORROWED_CODE
+}
+
 #####################################################################
 # Support Functions
 
 sub _search_inc_path
 {
-
     my $path = shift;
 
     # Find the full dir within @INC
-    foreach my $inc (@INC)
-    {
-        defined $inc or next;
-        ref $inc and next;
+    my $dir = firstres(
+        sub {
+            my $d;
+            $d = File::Spec->catdir($_, $path) if defined _STRING($_);
+            defined $d and -d $d and return $d;
+        },
+        @INC
+    ) or return;
 
-        my $dir = File::Spec->catdir($inc, $path);
-        next unless -d $dir;
+    Carp::croak("Found directory '$dir', but no read permissions") unless -r $dir;
 
-        -r $dir or Carp::croak("Found directory '$dir', but no read permissions");
-        return $dir;
-    }
-
-    return undef;
+    return $dir;
 }
 
 sub _module_subdir
@@ -450,7 +470,7 @@ sub _module_subdir
 }
 
 ## no critic (BuiltinFunctions::ProhibitStringyEval)
-if (eval "use Params::Util; 1;")
+if (eval "use Params::Util 1.07; 1;")
 {
     Params::Util->import("_CLASS", "_STRING");
 }
