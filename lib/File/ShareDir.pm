@@ -470,29 +470,6 @@ sub _module_subdir
     return $module;
 }
 
-sub _dist_packfile    ## no critic (Subroutines::ProhibitUnusedPrivateSubroutines)
-{
-    my $module = shift;
-    use Config ();
-    ## no critic (Variables::ProhibitPackageVars)
-    my @dirs = grep { -e } ($Config::Config{archlibexp}, $Config::Config{sitearchexp});
-    my $file = File::Spec->catfile('auto', split(/::/, $module), '.packlist',);
-
-    foreach my $dir (@dirs)
-    {
-        my $path = File::Spec->catfile($dir, $file);
-        next unless -f $path;
-
-        # Load the file
-        my $packlist = ExtUtils::Packlist->new($path);
-        $packlist or Carp::croak("Failed to load .packlist file for $module");
-
-        Carp::croak("CODE INCOMPLETE");
-    }
-
-    Carp::croak("CODE INCOMPLETE");
-}
-
 ## no critic (BuiltinFunctions::ProhibitStringyEval)
 if (eval "use Params::Util; 1;")
 {
