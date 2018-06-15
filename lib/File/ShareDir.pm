@@ -335,7 +335,7 @@ sub _dist_file_old
 
     # Find the full dir withing @INC
     return _search_inc_path($path)
-      || croak("Failed to find shared file '$file' for dist '$dist'");
+      || Carp::croak("Failed to find shared file '$file' for dist '$dist'");
 }
 
 =pod
@@ -456,7 +456,7 @@ sub _search_inc_path
         my $dir = File::Spec->catdir($inc, $path);
         next unless -d $dir;
 
-        -r $dir or croak("Found directory '$dir', but no read permissions");
+        -r $dir or Carp::croak("Found directory '$dir', but no read permissions");
         return $dir;
     }
 

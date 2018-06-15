@@ -24,5 +24,11 @@ dies(
     qr/Module 'File::ShareDir::Bad' is not loaded/,
     'Getting module dir for known non-existant module dies',
 );
+# test from RT#125582
+dies(
+    sub { dist_file('File-ShareDir', 'file/name.txt'); },
+    qr,Failed to find shared file 'file/name.txt' for dist 'File-ShareDir',,
+    "Getting non-existant file dies"
+);
 
 done_testing;
