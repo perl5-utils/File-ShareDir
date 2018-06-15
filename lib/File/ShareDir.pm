@@ -163,12 +163,9 @@ sub dist_dir
     my $dist = _DIST(shift);
     my $dir;
 
-    # Try the new version
-    $dir = _dist_dir_new($dist);
-    return $dir if defined $dir;
+    # Try the new version, then fall back to the legacy version
+    $dir = _dist_dir_new($dist) || _dist_dir_old($dist);
 
-    # Fall back to the legacy version
-    $dir = _dist_dir_old($dist);
     return $dir if defined $dir;
 
     # Ran out of options
@@ -182,7 +179,7 @@ sub _dist_dir_new
     return $DIST_SHARE{$dist} if exists $DIST_SHARE{$dist};
 
     # Create the subpath
-    my $path = File::Spec->catdir('auto', 'share', 'dist', $dist,);
+    my $path = File::Spec->catdir('auto', 'share', 'dist', $dist);
 
     # Find the full dir withing @INC
     return _search_inc_path($path);
@@ -224,14 +221,8 @@ sub module_dir
 
     return $MODULE_SHARE{$module} if exists $MODULE_SHARE{$module};
 
-    my $dir;
-
-    # Try the new version
-    $dir = _module_dir_new($module);
-    return $dir if defined $dir;
-
-    # Fall back to the legacy version
-    return _module_dir_old($module);
+    # Try the new version first, then fall back to the legacy version
+    return _module_dir_new($module) || _module_dir_old($module);
 }
 
 sub _module_dir_new
@@ -257,14 +248,9 @@ sub _module_dir_old
     $long =~ m/^(.*)\Q$short\E\.pm\z/s or Carp::croak("Failed to find base dir");
     my $dir = File::Spec->catdir("$1", 'auto', $short);
 
-    unless (-d $dir)
-    {
-        Carp::croak("Directory '$dir', does not exist");
-    }
-    unless (-r $dir)
-    {
-        Carp::croak("Directory '$dir', no read permissions");
-    }
+    -d $dir or Carp::croak("Directory '$dir': No such directory");
+    -r $dir or Carp::croak("Directory '$dir': No read permission");
+
     return $dir;
 }
 
@@ -293,12 +279,14 @@ sub dist_file
     my $dist = _DIST(shift);
     my $file = _FILE(shift);
 
-    # Try the new version first
-    my $path = _dist_file_new($dist, $file);
-    return $path if defined $path;
+    # Try the new version first, in doubt hand off to the legacy version
+    my $path = _dist_file_new($dist, $file) || _dist_file_old($dist, $file);
+    $path or Carp::croak("Failed to find shared file '$file' for dist '$dist'");
 
-    # Hand off to the legacy version
-    return _dist_file_old($dist, $file);
+    -f $path or Carp::croak("File '$path': No such file");
+    -r $path or Carp::croak("File '$path': No read permission");
+
+    return $path;
 }
 
 sub _dist_file_new
@@ -313,14 +301,6 @@ sub _dist_file_new
 
     # Does the file exist
     return undef unless -e $path;
-    unless (-f $path)
-    {
-        Carp::croak("Found dist_file '$path', but not a file");
-    }
-    unless (-r $path)
-    {
-        Carp::croak("File '$path', no read permissions");
-    }
 
     return $path;
 }
@@ -330,12 +310,15 @@ sub _dist_file_old
     my $dist = shift;
     my $file = shift;
 
-    # Create the subpath
-    my $path = File::Spec->catfile('auto', split(/-/, $dist), $file,);
+    # If it exists, what should the path be
+    my $dir = _dist_dir_old($dist);
+    return undef unless defined $dir;
+    my $path = File::Spec->catfile($dir, $file);
 
-    # Find the full dir withing @INC
-    return _search_inc_path($path)
-      || Carp::croak("Failed to find shared file '$file' for dist '$dist'");
+    # Does the file exist
+    return undef unless -e $path;
+
+    return $path;
 }
 
 =pod
@@ -367,14 +350,10 @@ sub module_file
     my $file   = _FILE(shift);
     my $dir    = module_dir($module);
     my $path   = File::Spec->catfile($dir, $file);
-    unless (-e $path)
-    {
-        Carp::croak("File '$file' does not exist in module dir");
-    }
-    unless (-r $path)
-    {
-        Carp::croak("File '$file' cannot be read, no read permissions");
-    }
+
+    -e $path or Carp::croak("File '$path' does not exist in module dir");
+    -r $path or Carp::croak("File '$path': No read permission");
+
     return $path;
 }
 
