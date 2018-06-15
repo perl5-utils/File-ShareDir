@@ -75,16 +75,4 @@ ok(-r $dist_file, '... and have read permissions');
 # Bug found in Module::Install 0.54, fixed in 0.55
 is(File::Spec->catfile($dist_dir, 'sample.txt'), $dist_file, 'dist_dir and dist_file find the same directory',);
 
-#####################################################################
-# Class Tests
-
-{
-    local @INC;
-    push @INC, "." unless grep { $_ eq "." } @INC;
-    use_ok("t::lib::ShareDir");
-}
-my $class_file = class_file('t::lib::ShareDir', 'test_file.txt');
-ok(-f $class_file, 'class_file ok');
-is($class_file, $module_file, 'class_file matches module_file for subclass');
-
 done_testing;
