@@ -641,7 +641,8 @@ Jens Rehsack E<lt>rehsack@cpan.orgE<gt>
 
 =head1 SEE ALSO
 
-L<File::ShareDir::Install>, L<File::HomeDir>,
+L<File::ShareDir::Install>,
+L<File::ConfigDir>, L<File::HomeDir>,
 L<Module::Install>, L<Module::Install::Share>,
 L<File::ShareDir::PAR>, L<Dist::Zilla::Plugin::ShareDir>
 
