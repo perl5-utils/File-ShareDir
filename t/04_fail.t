@@ -10,6 +10,8 @@ use File::Spec     ();
 use POSIX;
 use Test::More;
 
+use constant NO_PERMISSION_CHECK => ($^O eq 'MSWin32' or $< == 0);
+
 sub dies
 {
     my $code    = shift;
@@ -65,7 +67,7 @@ make_path($testsharedirold,          {mode => 0100});
 
 SKIP:
 {
-    skip("Root always has read permissions", 1) if $< == 0;
+    skip("Root always has read permissions", 1) if NO_PERMISSION_CHECK;
     dies(
         sub { my $module_dir = module_dir('ShareDir::TestClass'); },
         qr/No read permission/,
@@ -79,7 +81,7 @@ make_path($testsharedirnew,          {mode => 0100});
 
 SKIP:
 {
-    skip("Root always has read permissions", 1) if $< == 0;
+    skip("Root always has read permissions", 1) if NO_PERMISSION_CHECK;
     dies(
         sub { my $dist_dir = dist_dir('ShareDir-TestClass'); },
         qr/but no read permissions/,
@@ -109,7 +111,7 @@ close($fh);
 
 SKIP:
 {
-    skip("Root always has read permissions", 3) if $< == 0;
+    skip("Root always has read permissions", 3) if NO_PERMISSION_CHECK;
     dies(sub { my $dist_file = dist_file('ShareDir-TestClass', 'noread.txt'); }, qr/No read permission/, "Unreadable dist_file");
     dies(
         sub { my $module_file = module_file('ShareDir::TestClass', 'noread.txt'); },
