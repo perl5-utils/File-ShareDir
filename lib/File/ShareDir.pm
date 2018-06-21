@@ -460,7 +460,7 @@ sub _search_inc_path
         sub {
             my $d;
             $d = File::Spec->catdir($_, $path) if defined _STRING($_);
-            defined $d and -d $d and return $d;
+            defined $d and -d $d ? $d : 0;
         },
         @INC
     ) or return;
