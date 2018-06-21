@@ -1,5 +1,11 @@
 Revision history for Perl extension File-ShareDir
 
+1.114	2018-06-21
+    - be more expressive regarding to prerequisites
+    - improve detection for situations where no permission test
+      can be done
+    - fix edge case for 5.8
+
 1.112	2018-06-18
     - Fix tests that fail when running as root (RT#125602,
       thanks Wesley Schwengle <wesley@schwengle.net>)
