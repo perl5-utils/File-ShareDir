@@ -14,6 +14,7 @@ use constant NO_PERMISSION_CHECK => ($^O eq 'MSWin32' or $< == 0);
 
 sub dies
 {
+    local $Test::Builder::Level = $Test::Builder::Level + 1;
     my $code    = shift;
     my $pattern = shift;
     my $message = shift || 'Code dies as expected';
