@@ -56,7 +56,7 @@ Revision history for Perl extension File-ShareDir
 1.102	2014-05-12
     - Fix RT#95572 "necessary test files not copied into blib"
       Thanks to Graham Knop for fixing and Zefram for reporting
-    - Explicitely require warnings as runtime prerequisite
+    - Explicitly require warnings as runtime prerequisite
       Thanks to Graham Knop for reporting
 
 1.101	2014-05-10
