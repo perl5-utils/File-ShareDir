@@ -23,12 +23,16 @@ perl:
   - "5.12"
   - "5.10"
   - "5.8"
-sudo: false
+sudo: true
 matrix:
   include:
     - perl: "5.26"
       env: COVERAGE=1
+    - perl: "5.26"
+      env: TEST_AS_ROOT=1
 before_script:
   - coverage-setup
 after_success:
   - coverage-report
+script:
+  - perl Makefile.PL && ${TEST_AS_ROOT:+sudo} make test
