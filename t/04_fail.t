@@ -36,10 +36,10 @@ END { remove_tree($testautolib); }
 
 remove_tree($testautolib);
 make_path($testautolib, {mode => 0700});
-sysopen($fh, File::Spec->catfile($testautolib, qw(noread.txt)), O_RDWR | O_CREAT, 0200) or diag("$!");
+sysopen($fh, File::Spec->catfile($testautolib, qw(noread.txt)), O_RDWR | O_CREAT, 0100) or diag("$!");
 close($fh);
 
-my $NO_PERMISSION_CHECK = !-r File::Spec->catfile($testautolib, qw(noread.txt));
+my $NO_PERMISSION_CHECK = -r File::Spec->catfile($testautolib, qw(noread.txt));
 
 dies(sub { File::ShareDir::_DIST("ShareDir::TestClass") }, qr/Not a valid distribution name/, "Not a valid distribution name");
 dies(
