@@ -55,13 +55,13 @@ dies(sub { module_dir('') }, qr/Not a valid module name/, 'Null param to module_
 dies(
     sub { module_dir('File::ShareDir::Bad') },
     qr/Module 'File::ShareDir::Bad' is not loaded/,
-    'Getting module dir for known non-existant module dies',
+    'Getting module dir for known non-existent module dies',
 );
 # test from RT#125582
 dies(
     sub { dist_file('File-ShareDir', 'file/name.txt'); },
     qr,Failed to find shared file 'file/name.txt' for dist 'File-ShareDir',,
-    "Getting non-existant file dies"
+    "Getting non-existent file dies"
 );
 
 remove_tree($testautolib);

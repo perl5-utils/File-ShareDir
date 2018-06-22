@@ -189,7 +189,7 @@ sub _dist_dir_new
     # Create the subpath
     my $path = File::Spec->catdir('auto', 'share', 'dist', $dist);
 
-    # Find the full dir withing @INC
+    # Find the full dir within @INC
     return _search_inc_path($path);
 }
 
@@ -240,7 +240,7 @@ sub _module_dir_new
     # Create the subpath
     my $path = File::Spec->catdir('auto', 'share', 'module', _module_subdir($module),);
 
-    # Find the full dir withing @INC
+    # Find the full dir within @INC
     return _search_inc_path($path);
 }
 
