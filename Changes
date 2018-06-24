@@ -1,5 +1,14 @@
 Revision history for Perl extension File-ShareDir
 
+1.116	2018-06-24
+    - fix fail-test which incorrectly read without permission
+      ==> introduce new CI test proving this (Thanks to Ville
+          Skyttä <ville.skytta@iki.fi>)
+    - spelling fixes (Thanks to Ville Skyttä <ville.skytta@iki.fi>)
+    - fix author tests when run without recommended dependencies
+      (reported by Mohammed Anwar & Wesley Schwengle)
+    - add a test proving and reporting dependencies
+
 1.114	2018-06-21
     - be more expressive regarding to prerequisites
     - improve detection for situations where no permission test
