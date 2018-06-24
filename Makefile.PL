@@ -87,8 +87,11 @@ WriteMakefile1(
                 requires   => {%BUILD_DEPS},
                 recommends => {%BUNDLE_CONFIGURE_DEPS}
             },
-            build   => {requires => {%BUILD_DEPS}},
-            test    => {requires => {%TEST_DEPS}},
+            build => {requires => {%BUILD_DEPS}},
+            test  => {
+                requires   => {%TEST_DEPS},
+                recommends => {'CPAN::Meta' => 2.110440}
+            },
             runtime => {
                 requires   => {%RUN_DEPS},
                 recommends => {
