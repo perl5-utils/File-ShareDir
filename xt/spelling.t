@@ -10,3 +10,5 @@ __END__
 AnnoCPAN
 Jens
 Rehsack
+dir
+firstres

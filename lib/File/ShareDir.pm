@@ -435,6 +435,13 @@ else
 {
     ## no critic (ErrorHandling::RequireCheckingReturnValueOfEval)
     eval <<'END_OF_BORROWED_CODE';
+
+=head2 firstres
+
+Find the full dir within @INC.
+
+=cut
+
 sub firstres (&@)
 {
     my $test = shift;
