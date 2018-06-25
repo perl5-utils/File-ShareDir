@@ -49,9 +49,18 @@ foreach my $phase (qw/configure build runtime test/, (-d "xt" ? "develop" : ()))
             if (eval { require_ok($module) unless $module eq 'perl'; 1 })
             {
                 my $version = $module eq 'perl' ? $] : $module->VERSION;
-                $len{have} < length($version) and $len{have} = length($version);
-                my $ok = ok($reqs->accepts_module($module, $version), "$module matches required $version");
-                my $status = $ok ? "ok" : "not ok";
+                my $status;
+                if (defined $version)
+                {
+                    $len{have} < length($version) and $len{have} = length($version);
+                    my $ok = ok($reqs->accepts_module($module, $version), "$module matches required $version");
+                    $status = $ok ? "ok" : "not ok";
+                }
+                else
+                {
+                    $status  = "not ok";
+                    $version = "n/a";
+                }
                 $report{$phase}{$severity}{$module} = {
                     want   => $want,
                     have   => $version,
