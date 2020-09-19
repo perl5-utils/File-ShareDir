@@ -7,10 +7,12 @@ use Test::More;
 
 # Prereqs-testing for File::ShareDir
 
-TODO:
+BEGIN
 {
-    local $TODO = "Just diagnostics ...";
-    use_ok("CPAN::Meta") or plan skip_all => "Need CPAN::Meta for this test";
+    if (!eval { require CPAN::Meta; 1 })
+    {
+        plan skip_all => "Need CPAN::Meta for this test";
+    }
 }
 
 my $meta = CPAN::Meta->load_file(-d "xt" ? "MYMETA.json" : "META.json");
