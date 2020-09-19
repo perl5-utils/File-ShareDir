@@ -573,7 +573,7 @@ to use the development copy without needing to install them first.
 
   use Foo::Module;
 
-  # interal calls in Foo::Module to module_file('Foo::Module','bar') now resolves to
+  # internal calls in Foo::Module to module_file('Foo::Module','bar') now resolves to
   # the source trees share/ directory instead of something in @INC
 
 =head1 SUPPORT
