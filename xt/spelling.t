@@ -10,3 +10,6 @@ __END__
 AnnoCPAN
 Jens
 Rehsack
+RT
+dist
+pm
