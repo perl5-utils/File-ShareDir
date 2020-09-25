@@ -10,6 +10,7 @@
 ^Makefile$
 ^Build$
 ^Build\.bat$
+cover_db/
 \.Inline/.*
 _Inline/.*
 \.bak$
