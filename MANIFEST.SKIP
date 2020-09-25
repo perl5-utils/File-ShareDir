@@ -28,7 +28,7 @@ nytprof.out
 ^_build/.*
 ~$
 .*\.planner
-^\..*
+\.travis\.yml
 ^File-ShareDir-.*
 \bxt
 ^MYMETA\.json$
