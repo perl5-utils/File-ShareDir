@@ -29,6 +29,7 @@ nytprof.out
 ^_build/.*
 ~$
 .*\.planner
+.*\.lock
 \.travis\.yml
 ^File-ShareDir-.*
 \bxt
