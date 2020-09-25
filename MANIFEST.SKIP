@@ -32,5 +32,4 @@ nytprof.out
 \.travis\.yml
 ^File-ShareDir-.*
 \bxt
-^MYMETA\.json$
-^MYMETA\..*$
+^MYMETA.*
