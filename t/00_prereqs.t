@@ -28,7 +28,7 @@ foreach my $phase (qw/configure build runtime test/, (-d "xt" ? "develop" : ()))
 {
     foreach my $severity (qw/requires recommends suggests/)
     {
-        my $reqs = $prereqs->requirements_for($phase, $severity);
+        my $reqs    = $prereqs->requirements_for($phase, $severity);
         my @modules = sort $reqs->required_modules;
         @modules or next;
 
