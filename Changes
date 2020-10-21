@@ -1,5 +1,8 @@
 Revision history for Perl extension File-ShareDir
 
+1.118	2020-10-21
+    - Releasing 1.117_001 without further changes
+
 1.117_001	2020-09-25
     - fix failing test of dependencies after in 1.116 (from 1.112),
       thanks to Dirk Stöcker for reporting via RT#127376 and

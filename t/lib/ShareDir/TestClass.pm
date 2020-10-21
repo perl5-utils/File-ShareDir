@@ -4,6 +4,6 @@ use strict;
 
 use parent ("File::ShareDir");
 
-our $VERSION = "1.117_001";
+our $VERSION = "1.118";
 
 1;

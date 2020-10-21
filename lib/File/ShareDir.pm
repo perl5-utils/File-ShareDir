@@ -145,7 +145,7 @@ our @EXPORT_OK = qw{
 our %EXPORT_TAGS = (
     ALL => [@EXPORT_OK],
 );
-our $VERSION = '1.117_001';
+our $VERSION = '1.118';
 
 #####################################################################
 # Interface Functions
