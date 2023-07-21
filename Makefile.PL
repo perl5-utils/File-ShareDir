@@ -16,7 +16,8 @@ BEGIN
 }
 
 use inc::latest 'File::ShareDir::Install';
-File::ShareDir::Install->import('0.03', 'install_share');
+File::ShareDir::Install->VERSION(0.03);
+File::ShareDir::Install->import('install_share');
 
 if (inc::latest->can("write"))
 {
